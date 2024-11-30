@@ -1,0 +1,514 @@
+/* Reset basic styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Matrix Background */
+.matrix-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Make sure it stays behind other content */
+    background: black;
+    overflow: hidden;
+    opacity: 0.5;
+    
+}
+
+.matrix-code {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #00FF00; /* Matrix green color */
+    font-family: monospace; /* Use monospaced font for authenticity */
+    font-size: 20px;
+    white-space: nowrap;
+    pointer-events: none; /* Make sure it doesn't interact with other elements */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background: linear-gradient(45deg, #4b4376, #1e1e1e);
+    color: #e0e0e0; /* Light text color */
+  
+    padding-top: 70px; /* Matches the header height */
+}
+
+.profile-image {
+    width: 200px; /* Adjust size as needed */
+    height: 200px; /* Same as width to make it round */
+    border-radius: 50%; /* Makes the image round */
+    object-fit: cover; /* Ensures the image scales properly */
+    margin: 20px auto; /* Center the image */
+    display: block; /* Ensures centering works */
+    border: 5px solid #f39c12; /* Optional: Add a border */
+    box-shadow: 0 4px 8px rgba(19, 10, 0, 0.3); /* Optional: Add shadow */
+}
+
+
+
+.neonText {
+  color: #fff;
+  text-shadow:
+      0 0 7px #fff,
+      0 0 10px #fff,
+      0 0 21px #fff,
+      0 0 42px #0fa,
+      0 0 82px #0fa,
+      0 0 92px #0fa,
+      0 0 102px #0fa,
+      0 0 151px #0fa;
+}
+
+/* Header Styles */
+header {
+    background: #003161; /* Darker header background */
+    color: #fff;
+    padding: 1em 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+}
+
+/* Active nav link styling */
+nav ul li a.active {
+    border-bottom: 2px solid #f39c12; /* Underline for active link */
+    color: #f39c12; /* Highlighted color */
+}
+
+header nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 1.5em;
+    margin: 0;
+    padding: 0;
+}
+
+header nav ul li a {
+    text-decoration: none;
+    color: #e0e0e0; /* Light text color */
+    font-weight: bold;
+    position: relative;
+    padding-bottom: 5px;
+    transition: color 0.3s ease;
+}
+
+header nav ul li a:hover {
+    color: #f39c12; /* Highlight color */
+}
+
+/* Underline for active menu item */
+header nav ul li a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background-color: #f39c12; /* Accent color */
+    transition: width 0.3s ease;
+}
+
+header nav ul li a.active::after {
+    width: 100%;
+}
+
+/* Container styling for the animated intro */
+.animated-intro {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem; /* Adjust as needed */
+    color: #FFF6E3; /* Highlight color */
+    font-weight: bold;
+}
+/* Rotating text styles */
+#rotating-text {
+    margin-right: 10px; /* Space between animation and name */
+    overflow: hidden; /* Ensure text stays inside */
+    white-space: nowrap; /* Prevent text wrapping */
+    animation: fadeInOut 9s infinite; /* Fade effect */
+}
+
+/* Optional fade animation */
+@keyframes fadeInOut {
+    0%, 60% { opacity: 1; }
+    80%, 100% { opacity: 0; }
+}
+
+/* Main Content */
+main {
+
+    margin-top: 20px;
+}
+
+section {
+    margin: 30px;
+    padding: 20px;
+    background: #1e1e1e; /* Dark section background */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    opacity: 0.9;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Animation */
+    
+}
+
+section.visible {
+    opacity: 0.9;
+    transform: translateY(0);
+}
+
+#about {
+    margin: 20px;
+    min-height: 570px; /* Ensure a minimum height */
+    padding: 10px 20px; /* Add padding for better spacing */
+    background:  #010a01;
+    color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Vertically center content */
+}
+
+#about h1, #projects h2, #skills h2, #contact h2 {
+    color: #f39c12; /* Accent color */
+}
+#about .container {
+    text-align: center;
+}
+
+.download-cv-button {
+    display: inline-block;
+    margin-top: 20px; /* Space above the button */
+    padding: 10px 20px; /* Button padding */
+    font-size: 1em;
+    font-weight: bold;
+    text-decoration: none;
+    color: #fff; /* Text color */
+    background-color: #f39c12; /* Button background color */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.download-cv-button:hover {
+    background-color: #d88709; /* Darker shade for hover */
+    transform: scale(1.05); /* Slight zoom effect on hover */
+}
+
+.social-media {
+    margin-top: 20px; /* Space above the social icons */
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* Space between icons */
+}
+
+.social-icon.youtube {
+    color: #FF0000; /* YouTube red */
+}
+
+.social-icon.youtube:hover {
+    color: #CC0000; /* Darker red on hover */
+}
+
+.social-icon.leetcode {
+    color: #FFA116; /* LeetCode orange */
+}
+
+.social-icon.leetcode:hover {
+    color: #E68A00; /* Darker orange on hover */
+}
+
+.social-icon.hackerrank {
+    color: #2EC866; /* HackerRank green */
+}
+
+.social-icon.hackerrank:hover {
+    color: #27AE60; /* Darker green on hover */
+}
+
+
+.social-icon {
+    font-size: 1.5em; /* Size of the icons */
+    color: #e0e0e0; /* Default icon color */
+    text-decoration: none; /* Remove underline */
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: scale(1.2); /* Slight zoom on hover */
+}
+
+.social-icon.linkedin:hover {
+    color: #0077b5; /* LinkedIn blue */
+}
+
+.social-icon.github:hover {
+    color: #333; /* GitHub black */
+}
+
+.social-icon.twitter:hover {
+    color: #1da1f2; /* Twitter blue */
+}
+
+
+/* Projects */
+#projects h2{
+margin-bottom: 110px;
+
+}
+
+#projects {
+    margin: 20px;
+    min-height: 600px; /* Ensure minimum height for the section */
+    padding: 60px 10px; /* Add padding for spacing */
+    background: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: center;
+     
+}
+
+.project-list {
+    padding top:100px;
+    display: flex;
+    gap: 30px; /* Increased gap between project boxes */
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.project {
+    background: #4B4376; /* Slightly lighter for contrast */
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.project h3 {
+    color: #f39c12;
+    padding: 50px;
+     
+}
+
+.project p {
+    color: #e0e0e0;
+}
+
+.project a {
+    text-decoration: none;
+    color: #4fc3f7; /* Link color */
+    font-weight: bold;
+}
+
+.project a:hover {
+    color: #29b6f6; /* Hover effect */
+}
+
+/* Skills */
+
+#skills {
+    margin-bottom: 50px;
+    background: #1e1e1e; /* Dark background */
+    color: #e0e0e0; /* Light text */
+    padding: 80px 20px; /* Add spacing */
+    min-height: 500px; /* Minimum height */
+    text-align: center; /* Center-align text */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#skills ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+#skills ul li {
+    background: #282828;
+    color: #f39c12;
+    padding: 10px 20px;
+    border-radius: 20px;
+}
+
+/* Education Timeline Styles */
+.education-timeline {
+    margin-top: 40px;
+    padding: 20px;
+    position: relative; /* Required for positioning the line */
+    border-radius: 8px;
+    background: #1e1e1e;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Vertical line in the timeline */
+.education-timeline::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 30px; /* Adjust to align with the years */
+    width: 2px;
+    height: 100%;
+    background: #f39c12; /* Accent color for the line */
+    z-index: -1; /* Behind the timeline items */
+}
+
+.timeline-item {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.timeline-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Year styling */
+.timeline-year {
+    font-size: 1.5em;
+    color: #f39c12;
+    font-weight: bold;
+    margin-right: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Dot on the line */
+.timeline-year::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -10px;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background: #f39c12;
+    border-radius: 50%;
+    z-index: 2;
+    border: 2px solid #1e1e1e; /* Border to match background */
+}
+
+/* Content box */
+.timeline-content {
+    background: #282828;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    flex: 1;
+}
+
+.timeline-content h3 {
+    margin: 0 0 10px;
+    color: #e0e0e0;
+}
+
+.timeline-content p {
+    margin: 0 0 5px;
+    color: #b0b0b0;
+}
+
+.timeline-content p strong {
+    color: #f39c12;
+}
+
+
+
+/* Contact Form */
+#contact label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+#contact input, #contact textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #444;
+    background: #1e1e1e; /* Dark input background */
+    color: #e0e0e0;
+    border-radius: 5px;
+}
+
+#contact button {
+    background: #f39c12;
+    color: #1e1e1e;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+#contact button:hover {
+    background: #d88709; /* Darker orange for hover */
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 10px;
+    background: #1e1e1e;
+    color: #e0e0e0;
+    margin-top: 20px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    header {
+        padding: 1.5em 0;
+    }
+
+    header nav ul {
+        flex-direction: column;
+        gap: 1em;
+    }
+
+    #projects .project-list {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .project {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+
+    #skills ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+        .education-timeline::before {
+        left: 10px; /* Adjust the line's position */
+    }
+
+    .timeline-item {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-left: 20px;
+    }
+
+    .timeline-year {
+        margin-bottom: 10px;
+    }
+
+    .timeline-year::before {
+        left: -15px; /* Adjust dot position */
+    }
+}
+
