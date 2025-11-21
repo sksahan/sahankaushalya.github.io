@@ -1,165 +1,746 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio - Sahan Kaushalya</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>SAHAN KAUSHALYA | SYSTEM_ROOT_V6</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        term: {
+                            bg: '#050505', card: '#111111', green: '#00ff41', cyan: '#00f0ff',
+                            purple: '#bd93f9', orange: '#ffb86c', red: '#ff5555', border: '#333333'
+                        }
+                    },
+                    fontFamily: { mono: ['Fira Code', 'monospace'], sans: ['Inter', 'sans-serif'] },
+                    animation: {
+                        'spin-slow': 'spin 10s linear infinite',
+                        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+                        'scan': 'scan 4s linear infinite',
+                        'blink': 'blink 1s step-end infinite',
+                        'fadeInUp': 'fadeInUp 1s ease-out forwards',
+                        'moveArm1': 'moveArm1 4s infinite ease-in-out',
+                        'moveArm2': 'moveArm2 4s infinite ease-in-out',
+                        'liquidWave': 'liquidWave 3s infinite ease-in-out',
+                        'bubbleRise': 'bubbleRise 2s infinite linear',
+                        'typing': 'typing 3s steps(40, end) forwards, blink-caret 0.75s step-end infinite'
+                    },
+                    keyframes: {
+                        pulseGlow: { '0%,100%': { opacity:1, filter:'drop-shadow(0 0 5px #00ff41)' }, '50%': { opacity:.7, filter:'drop-shadow(0 0 2px #00ff41)' } },
+                        scan: { '0%': { top:'0%' }, '100%': { top:'100%' } },
+                        blink: { '50%': { opacity:0 } },
+                        fadeInUp: { from: { opacity:0, transform:'translateY(40px)' }, to: { opacity:1, transform:'translateY(0)' } },
+                        moveArm1: { '0%,100%': { transform:'rotate(-20deg)' }, '50%': { transform:'rotate(20deg)' } },
+                        moveArm2: { '0%,100%': { transform:'rotate(40deg)' }, '50%': { transform:'rotate(-20deg)' } },
+                        liquidWave: { '0%,100%': { height:'60%' }, '50%': { height:'65%' } },
+                        bubbleRise: { '0%': { bottom:'0', opacity:1 }, '100%': { bottom:'100%', opacity:0 } },
+                        typing: { from: { width: 0 }, to: { width: '100%' } },
+                        'blink-caret': { '50%': { borderColor: 'transparent' } }
+                    }
+                }
+            }
+        }
+    </script>
 
+    <style>
+        body { background:#000; color:#e5e5e5; overflow-x:hidden; }
+        canvas { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; }
+        #blackhole-canvas { z-index:-2; }
+        #atom-canvas { z-index:-1; opacity:0.3; }
+        #neural-net { z-index:-1; opacity:0.2; }
+        #oscilloscope { bottom:0; top:auto; height:60px; opacity:0.5; z-index:10; }
+        .crt-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.1) 50%), linear-gradient(90deg, rgba(255,0,0,0.06), rgba(0,255,0,0.02), rgba(0,0,255,0.06)); background-size:100% 2px, 3px 100%; pointer-events:none; z-index:9999; }
+        .terminal-window { background:rgba(10,10,10,0.65); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.1); border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,0.6); overflow:hidden; position:relative; }
+        .terminal-scanline { position:absolute; width:100%; height:2px; background:rgba(0,255,65,0.3); box-shadow:0 0 10px rgba(0,255,65,0.5); animation:scan 4s linear infinite; z-index:10; }
+        .glass-card { background:rgba(15,15,15,0.7); backdrop-filter:blur(10px); border:1px solid #333; transition:all 0.3s; }
+        .glass-card:hover { border-color:#00f0ff; box-shadow:0 0 20px rgba(0,240,255,0.1); transform:translateY(-5px); }
+        .nav-link::after { content:''; position:absolute; width:0; height:2px; bottom:-4px; left:0; background:#00ff41; transition:width 0.3s; }
+        .nav-link:hover::after { width:100%; }
+        .robot-arm, .flask-container { width:120px; height:120px; margin:0 auto; }
+        .base { position:absolute; bottom:0; left:40px; width:40px; height:15px; background:#444; border-radius:4px; }
+        .arm-1 { position:absolute; bottom:10px; left:55px; width:10px; height:60px; background:#666; transform-origin:bottom center; animation:moveArm1 4s infinite ease-in-out; }
+        .joint-1 { position:absolute; bottom:5px; left:-3px; width:16px; height:16px; background:#00ff41; border-radius:50%; }
+        .arm-2 { position:absolute; top:0; left:2px; width:6px; height:50px; background:#888; transform-origin:top center; animation:moveArm2 4s infinite ease-in-out; }
+        .claw { position:absolute; bottom:-10px; left:-6px; width:18px; height:10px; border-left:3px solid #00f0ff; border-right:3px solid #00f0ff; border-bottom:3px solid #00f0ff; }
+        .flask { width:50px; height:50px; border:3px solid #bd93f9; border-radius:0 0 20px 20px; background:rgba(189,147,249,0.1); overflow:hidden; position:relative; }
+        .flask::before { content:''; position:absolute; top:-25px; left:12px; width:20px; height:25px; border-left:3px solid #bd93f9; border-right:3px solid #bd93f9; }
+        .liquid { position:absolute; bottom:0; width:100%; height:60%; background:#bd93f9; opacity:0.7; animation:liquidWave 3s infinite ease-in-out; }
+        .bubble { position:absolute; width:6px; height:6px; background:#fff; border-radius:50%; animation:bubbleRise 2s infinite linear; }
+        #post-feed, #project-carousel { display:flex; overflow-x:auto; gap:20px; padding-bottom:20px; }
+        #post-feed::-webkit-scrollbar, #project-carousel::-webkit-scrollbar { height:8px; background:rgba(0,255,65,0.1); }
+        #post-feed::-webkit-scrollbar-thumb, #project-carousel::-webkit-scrollbar-thumb { background:#00ff41; border-radius:4px; }
+        .timeline-in-view .timeline-item { opacity:1 !important; transform:translateY(0) !important; }
+        .typing-line {
+            overflow:hidden; border-right:2px solid #00ff41; white-space:nowrap; width:0;
+            animation: typing 2s steps(40, end) forwards, blink-caret 0.75s step-end infinite;
+        }
+        @keyframes typing { from { width:0 } to { width:100% } }
+        @keyframes blink-caret { 50% { border-color:transparent } }
+        .skill-block .typing-line:nth-child(1) { animation-delay:0.5s; }
+        .skill-block .typing-line:nth-child(2) { animation-delay:1s; }
+        .skill-block .typing-line:nth-child(3) { animation-delay:1.5s; }
+        .skill-block .typing-line:nth-child(4) { animation-delay:2s; }
+        .tooltip {
+            transform:translateY(10px); transition:opacity 0.4s ease, transform 0.4s ease;
+        }
+        .group:hover .tooltip {
+            opacity:1 !important; transform:translateY(0);
+        }
+        .tooltip::after {
+            content:''; position:absolute; bottom:-10px; left:50%; transform:translateX(-50%) rotate(45deg);
+            width:20px; height:20px; background:inherit; border:inherit; border-top:none; border-left:none;
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="#about">About</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#skills">Skills & Edu</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+<body class="font-sans selection:bg-term-green selection:text-black">
 
-    <main>
-        <section id="about">
-            <div class="container">
-                
-                 <h2 class="neonText"> Hi, It's Sahan Kaushalya</h2> 
-                <div class="animated-intro">
-                   <span id="rotating-text"></span>
-                   
-                   
-                    
+    <canvas id="blackhole-canvas"></canvas>
+    <canvas id="atom-canvas"></canvas>
+    <canvas id="neural-net"></canvas>
+    <canvas id="oscilloscope"></canvas>
+    <div class="crt-overlay"></div>
+
+    <!-- NAVIGATION -->
+    <nav class="fixed w-full z-50 glass-card border-b border-term-border top-0 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <i class="fa-solid fa-terminal text-term-green text-2xl animate-pulse"></i>
+                        <div class="absolute -top-1 -right-1 w-2 h-2 bg-term-green rounded-full animate-ping"></div>
+                    </div>
+                    <div class="font-mono flex flex-col">
+                        <span class="text-white font-bold tracking-wider">SAHAN_KAUSHALYA</span>
+                        <span class="text-xs text-gray-500">root@system:~</span>
+                    </div>
                 </div>
-                
-                <img src="./img/My_img2.jpg" alt="Sahan's Profile Picture" class="profile-image">
-                <p>Welcome to my portfolio website! I'm a passionate developer and mechanical engineering Technology student.</p>
-                <a href="https://drive.google.com/file/d/1R0gaGjWCCuvV1ftwppOLCl-0WT0OZAhl/view?usp=sharing" download class="download-cv-button">Download CV</a>
-                
-        <div class="social-media">
-            <a href="https://www.linkedin.com/in/sahan-kaushalya-7aa99517a/" target="_blank" class="social-icon linkedin">
-                <i class="fab fa-linkedin"></i>
-            </a>
-            <a href="https://github.com/sksahan" target="_blank" class="social-icon github">
-                <i class="fab fa-github"></i>
-            </a>
-            <a href="https://x.com/sksalitha" target="_blank" class="social-icon twitter">
-                <i class="fab fa-twitter"></i>
-            </a>
-            <a href="https://www.youtube.com/@SK-Lab" target="_blank" class="social-icon youtube">
-                <i class="fab fa-youtube"></i>
-            </a>
-            <a href="https://leetcode.com/u/sksahan" target="_blank" class="social-icon leetcode">
-                <i class="fas fa-code"></i>
-            </a>
-            <a href="https://www.hackerrank.com/profile/sksalitha" target="_blank" class="social-icon hackerrank">
-                <i class="fas fa-terminal"></i>
-            </a>
+                <div class="hidden md:flex space-x-8 font-mono text-sm text-gray-400">
+                    <a href="#home" class="nav-link hover:text-white">/0x00_INIT</a>
+                    <a href="#skills" class="nav-link hover:text-white">/0x10_CORE_PROC</a>
+                    <a href="#projects" class="nav-link hover:text-white">/0x20_ARTIFACTS</a>
+                    <a href="#about" class="nav-link hover:text-white">/0x30_BIO</a>
+                    <a href="#links" class="nav-link hover:text-white">/0x40_POST_FEED</a>
+                </div>
+                <a href="#contact" class="font-mono text-xs bg-term-green text-black px-5 py-2 font-bold hover:bg-white hover:shadow-[0_0_10px_rgba(0,255,65,0.4)] transition-all">
+                    INITIALIZE_CONTACT
+                </a>
+            </div>
         </div>
+    </nav>
+
+    <!-- HOME -->
+    <section id="home" class="min-h-screen flex items-center pt-20">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div>
+                <div class="inline-block border border-term-green bg-green-900/20 text-term-green px-3 py-1 rounded mb-6 font-mono text-sm animate-pulse">● GRAVITATIONAL ANOMALY DETECTED</div>
+                <h1 class="text-5xl md:text-7xl font-black text-white mb-6">
+                    SAHAN <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-term-green to-term-cyan drop-shadow-[0_0_10px_rgba(0,255,65,0.3)]">KAUSHALYA</span>
+                </h1>
+                <div class="font-mono text-xl text-gray-400 mb-10 h-8">
+                    <span class="text-term-green">></span> <span id="typewriter"></span><span class="animate-blink">_</span>
+                </div>
+                <a href="#projects" class="glass-card px-8 py-4 text-white font-mono font-bold hover:bg-term-green hover:text-black transition-all">VIEW_ARTIFACTS</a>
+            </div>
+            <div>
+                <div class="terminal-window">
+                    <div class="terminal-scanline"></div>
+                    <div class="terminal-header flex items-center justify-between px-4 py-2 bg-gray-900/80 border-b border-gray-800">
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <div class="text-xs text-gray-500">LOG_STREAM — root@system:~/ — 80x24</div>
+                    </div>
+                    <div class="terminal-body p-4 font-mono text-xs h-80 overflow-y-auto">
+                        <div id="terminal-output"><p class="text-gray-400">Loading dynamic skill matrix...</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SKILLS - TYPING ANIMATION -->
+    <section id="skills" class="py-24 bg-black/40 relative border-t border-term-border backdrop-blur-sm overflow-hidden">
+        <canvas id="neural-net"></canvas>
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-16">
+                <div class="font-mono text-term-green text-sm tracking-wider mb-4">/root/core/scanner.exe</div>
+                <h2 class="text-5xl font-bold text-white font-mono relative inline-block">
+                    0x10_CORE_PROC
+                    <span class="absolute -bottom-2 left-0 w-full h-1 bg-term-green animate-pulse shadow-[0_0_20px_rgba(0,255,65,0.8)]"></span>
+                </h2>
+                <p class="text-term-cyan text-xs font-mono mt-8 animate-blink">► INITIATING CAPABILITY SCAN...</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Software Engineering -->
+                <div class="glass-card p-8 rounded-xl border border-term-border hover:border-term-green transition-all group cursor-pointer skill-block">
+                    <h3 class="text-2xl font-bold text-term-green mb-6">SOFTWARE_ENGINEERING</h3>
+                    <div class="typing-container space-y-3 font-mono text-sm">
+                        <div class="typing-line"><span class="text-gray-400">ALGORITHM_OPTIMIZATION</span><span class="text-term-green ml-auto">95%</span></div>
+                        <div class="typing-line"><span class="text-gray-400">AI/ML_DEPLOYMENT</span><span class="text-term-green ml-auto">93%</span></div>
+                        <div class="typing-line"><span class="text-gray-400">FULL_STACK_ARCH</span><span class="text-term-green ml-auto">97%</span></div>
+                        <div class="typing-line"><span class="text-gray-400">LLM_INTEGRATION</span><span class="text-term-green ml-auto">91%</span></div>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-gray-800 text-term-green text-xs font-mono opacity-0 group-hover:opacity-100 transition-all">
+                        ► CORE: Python • Go • React • FastAPI • GraphQL • Docker
+                    </div>
+                </div>
+                <!-- Embedded Systems -->
+                <div class="glass-card p-8 rounded-xl border border-term-border hover:border-term-cyan transition-all group cursor-pointer skill-block">
+                    <h3 class="text-2xl font-bold text-term-cyan mb-6">EMBEDDED_SYSTEMS</h3>
+                    <div class="typing-container space-y-3 font-mono text-sm">
+                        <div class="typing-line"><span class="text-gray-400">FIRMWARE_DEV</span><span class="text-term-cyan ml-auto">94%</span></div>
+                        <div class="typing-line"><span class="text-gray-400">PCB_DESIGN</span><span class="text-term-cyan ml-auto">91%</span></div>
+                        <div class="typing-line"><span class="text-gray-400">RTOS_KERNEL</span><span class="text-term-cyan ml-auto">89%</span></div>
+                        <div class="typing-line"><span class="text-gray-400">LOW_LEVEL_OPT</span><span class="text-term-cyan ml-auto">96%</span></div>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-gray-800 text-term-cyan text-xs font-mono opacity-0 group-hover:opacity-100 transition-all">
+                        ► CORE: C/C++ • STM32 • FreeRTOS • Altium • ARM Assembly
+                    </div>
+                </div>
+                <!-- Mechatronics & Robotics -->
+                <div class="glass-card p-8 rounded-xl border border-term-border hover:border-term-purple transition-all group cursor-pointer skill-block">
+                    <h3 class="text-2xl font-bold text-term-purple mb-6">MECHATRONICS_ROBOTICS</h3>
+                    <div class="typing-container space-y-3 font-mono text-sm">
+                        <div class="typing-line"><span class="text-gray-400">KINEMATICS_DYNAMICS</span><span class="text-term-purple ml-auto">90%</span></div>
+                        <div class="typing-line"><span class="text-gray-400">CONTROL_THEORY</span><span class="text-term-purple ml-auto">88%</span></div>
+                        <div class="typing-line"><span class="text-gray-400">CAD_CAM</span><span class="text-term-purple ml-auto">92%</span></div>
+                        <div class="typing-line"><span class="text-gray-400">ROS2_FRAMEWORK</span><span class="text-term-purple ml-auto">89%</span></div>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-gray-800 text-term-purple text-xs font-mono opacity-0 group-hover:opacity-100 transition-all">
+                        ► CORE: ROS2 • Fusion360 • MATLAB • PID • SLAM
+                    </div>
+                </div>
+            </div>
+            <div class="mt-16 text-center">
+                <p class="font-mono text-term-green text-lg animate-blink">► CAPABILITY SCAN COMPLETE • ALL SYSTEMS OPTIMAL</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROJECTS - AUTO-SCROLLING CAROUSEL -->
+    <section id="projects" class="py-24 bg-black/60 border-t border-term-border relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center gap-4 mb-12 justify-center">
+                <i class="fa-solid fa-microchip text-term-cyan text-4xl animate-pulse"></i>
+                <h2 class="text-4xl font-bold text-white font-mono">0x20_ARTIFACTS</h2>
+                <span class="text-term-green text-xs font-mono animate-blink ml-4">► DEPLOYMENT_STREAM_ACTIVE</span>
+            </div>
+            <div id="project-carousel" class="flex gap-10 overflow-x-auto scrollbar-hide py-8"></div>
+            <div class="text-center mt-8 space-x-4">
+                <button id="proj-left" class="glass-card px-6 py-3 text-term-green font-mono text-sm hover:bg-term-green hover:text-black transition-all">◄ PREV</button>
+                <button id="proj-right" class="glass-card px-6 py-3 text-term-green font-mono text-sm hover:bg-term-green hover:text-black transition-all">NEXT ►</button>
+                <button id="toggle-proj-scroll" class="glass-card px-6 py-3 text-term-cyan font-mono text-sm hover:bg-term-cyan hover:text-black transition-all">PAUSE AUTO_SCROLL</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT + TIMELINE WITH TOOLTIPS -->
+    <section id="about" class="py-24 bg-black border-t border-term-border">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="space-y-24">
+                <div class="text-center">
+                    <div class="font-mono text-term-green mb-4 text-sm tracking-wider">/root/bio/genetic_code.js</div>
+                    <h2 class="text-5xl md:text-7xl font-black text-white mb-10 leading-tight">Engineering Life & Logic</h2>
+                    <div class="max-w-4xl mx-auto space-y-6 text-gray-400 text-lg leading-relaxed font-sans">
+                        <p>I am <strong class="text-white text-xl">Sahan Kaushalya</strong>. I view technology as the next step in evolution.</p>
+                        <p>Just as DNA encodes the instructions for life, I write the code that breathes life into silicon. From the atomic precision of PCB design to the abstract complexity of Neural Networks, I build systems that adapt, learn, and endure.</p>
+                        <div class="font-mono text-sm text-term-cyan pt-8 border-t border-gray-800 inline-block">> CURRENT_MISSION: BRIDGING BIOLOGY AND SILICON<br>> STATUS: OPTIMIZED</div>
+                    </div>
+                </div>
+
+                <div class="timeline-container">
+                    <div class="font-mono text-term-green mb-4 text-sm text-center">/root/bio/timeline.sys</div>
+                    <h3 class="text-3xl font-bold text-white mb-16 text-center flex items-center justify-center gap-4">
+                        <i class="fa-solid fa-timeline text-term-purple text-4xl"></i> Journey Timeline
+                    </h3>
+                    <div class="relative max-w-6xl mx-auto px-8">
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-transparent via-term-green to-transparent opacity-40"></div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-term-green shadow-[0_0_30px_rgba(0,255,65,0.9)] animate-pulse"></div>
+                        <div class="space-y-40 relative">
+                            <!-- 2022 -->
+                            <div class="timeline-item group flex items-center justify-start relative">
+                                <div class="w-5/12 text-right pr-16">
+                                    <div class="glass-card p-8 rounded-r-xl border-r-4 border-r-term-green hover:border-term-cyan transition-all">
+                                        <span class="font-mono text-term-cyan text-sm block mb-2">2022</span>
+                                        <p class="text-white font-bold text-lg">
+                                            Started HND in Mechanical & Manufacturing Technology
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute left-1/2 -translate-x-1/2 w-12 h-12 bg-term-green rounded-full border-4 border-black shadow-[0_0_50px_rgba(0,255,65,1)] animate-ping"></div>
+                                    <div class="absolute left-1/2 -translate-x-1/2 w-10 h-10 bg-black rounded-full border-4 border-term-green"></div>
+                                    <div class="tooltip opacity-0 group-hover:opacity-100 pointer-events-none absolute left-1/2 -translate-x-1/2 -top-32 bg-black/90 backdrop-blur-lg border border-term-green rounded-xl p-6 shadow-2xl transition-all duration-300 z-50 min-w-[300px]">
+                                        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-4 h-4 bg-term-green"></div>
+                                        <h4 class="text-term-green font-bold mb-3 flex items-center gap-3">
+                                            <i class="fa-solid fa-graduation-cap"></i> Academic Foundation
+                                        </h4>
+                                        <p class="text-sm text-gray-300 leading-relaxed">
+                                            University College of Jaffna<br>
+                                            <span class="text-term-green">• Mechanical Systems • Manufacturing • Robotics Basics</span><br>
+                                            Built first CNC prototype & servo controllers
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="w-5/12"></div>
+                            </div>
+                            
+                             <!-- 2023 -->
+                            <div class="timeline-item group flex items-center justify-end relative">
+                                <div class="w-5/12"></div>
+                                <div class="relative">
+                                    <div class="absolute left-1/2 -translate-x-1/2 w-12 h-12 bg-term-purple rounded-full border-4 border-black shadow-[0_0_50px_rgba(189,147,249,1)] animate-ping"></div>
+                                    <div class="absolute left-1/2 -translate-x-1/2 w-10 h-10 bg-black rounded-full border-4 border-term-purple"></div>
+                                    <div class="tooltip opacity-0 group-hover:opacity-100 pointer-events-none absolute left-1/2 -translate-x-1/2 -top-40 bg-black/90 backdrop-blur-lg border border-term-purple rounded-xl p-6 shadow-2xl transition-all duration-300 z-50 min-w-[320px]">
+                                        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-4 h-4 bg-term-purple"></div>
+                                        <h4 class="text-term-purple font-bold mb-3 flex items-center gap-3">
+                                            <i class="fa-solid fa-code"></i> Software Evolution
+                                        </h4>
+                                        <p class="text-sm text-gray-300 leading-relaxed">
+                                            University of Moratuwa (External)<br>
+                                            <span class="text-term-purple">• Software Engineering • AI/ML • Databases</span><br>
+                                            First neural network deployment + full-stack projects
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="w-5/12 pl-16">
+                                    <div class="glass-card p-8 rounded-l-xl border-l-4 border-l-term-purple hover:border-term-cyan transition-all">
+                                        <span class="font-mono text-term-cyan text-sm block mb-2">2023</span>
+                                        <p class="text-white font-bold text-lg">
+                                            Began Bachelor of IT (External) – University of Moratuwa
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2024 -->
+                            <div class="timeline-item group flex items-center justify-start relative">
+                                <div class="w-5/12 text-right pr-16">
+                                    <div class="glass-card p-8 rounded-r-xl border-r-4 border-r-term-orange hover:border-term-green transition-all">
+                                        <span class="font-mono text-term-cyan text-sm block mb-2">2024</span>
+                                        <p class="text-white font-bold text-lg">
+                                            Joined HalpeWatte Tea Factory as Trainee IoT Developer
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute left-1/2 -translate-x-1/2 w-12 h-12 bg-term-orange rounded-full border-4 border-black shadow-[0_0_50px_rgba(255,152,108,1)] animate-ping"></div>
+                                    <div class="absolute left-1/2 -translate-x-1/2 w-10 h-10 bg-black rounded-full border-4 border-term-orange"></div>
+                                    <div class="tooltip opacity-0 group-hover:opacity-100 pointer-events-none absolute left-1/2 -translate-x-1/2 -top-44 bg-black/90 backdrop-blur-lg border border-term-orange rounded-xl p-6 shadow-2xl transition-all duration-300 z-50 min-w-[340px]">
+                                        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-4 h-4 bg-term-orange"></div>
+                                        <h4 class="text-term-orange font-bold mb-3 flex items-center gap-3">
+                                            <i class="fa-solid fa-industry"></i> Industry Integration
+                                        </h4>
+                                        <p class="text-sm text-gray-300 leading-relaxed">
+                                            Uva HalpeWatte Tea Factory<br>
+                                            <span class="text-term-orange">• Tea Quality AI Vision • IoT Automation • Embedded Systems</span><br>
+                                            Deployed CNN model achieving 99.2% accuracy in production
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="w-5/12"></div>
+                            </div>
+
+                            <!-- 2025+ Future -->
+                            <div class="timeline-item group flex items-center justify-end relative">
+                                <div class="w-5/12"></div>
+                                <div class="relative">
+                                    <div class="absolute left-1/2 -translate-x-1/2 w-14 h-14 bg-term-cyan rounded-full border-4 border-black shadow-[0_0_60px_rgba(0,240,255,1.5)] animate-pulse"></div>
+                                    <div class="absolute left-1/2 -translate-x-1/2 w-12 h-12 bg-black rounded-full border-4 border-term-cyan"></div>
+                                    <div class="tooltip opacity-0 group-hover:opacity-100 pointer-events-none absolute left-1/2 -translate-x-1/2 -top-48 bg-black/90 backdrop-blur-lg border border-term-cyan rounded-xl p-6 shadow-2xl transition-all duration-300 z-50 min-w-[360px]">
+                                        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-4 h-4 bg-term-cyan"></div>
+                                        <h4 class="text-term-cyan font-bold mb-3 flex items-center gap-3">
+                                            <i class="fa-solid fa-rocket"></i> Future Directive
+                                        </h4>
+                                        <p class="text-sm text-gray-300 leading-relaxed">
+                                            Current Mission Active<br>
+                                            <span class="text-term-cyan">• Advanced Robotics • AI-Driven Automation • Industry 4.0</span><br>
+                                            Building next-gen systems that merge biology & silicon
+                                        </p>
+                                        <p class="text-term-green mt-4 text-lg animate-blink">► SYSTEM ONLINE • AWAITING NEXT DIRECTIVE</p>
+                                    </div>
+                                </div>
+                                <div class="w-5/12 pl-16">
+                                    <div class="glass-card p-8 rounded-l-xl border-l-4 border-l-term-cyan hover:border-white transition-all">
+                                        <span class="font-mono text-term-cyan text-sm block mb-2">2025 →</span>
+                                        <p class="text-white font-bold text-lg">
+                                            Leading advanced robotics & AI automation projects
+                                        </p>
+                                        <p class="text-term-green text-sm mt-3 animate-blink">► CURRENT_POSITION</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center pt-16">
+                    <a href="https://drive.google.com/file/d/1R0gaGjWCCuvV1ftwppOLCl-0WT0OZAhl/view?usp=sharing" download class="inline-block px-12 py-6 bg-term-green text-black font-mono font-bold text-2xl rounded-lg hover:bg-white hover:shadow-[0_0_40px_rgba(0,255,65,0.7)] transition-all transform hover:scale-110">
+                        DOWNLOAD_CV()
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- POST FEED -->
+    <section id="links" class="py-24 bg-black/40 border-t border-term-border backdrop-blur-sm relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center gap-4 mb-12">
+                <i class="fa-solid fa-square-rss text-term-orange text-4xl animate-pulse"></i>
+                <h2 class="text-4xl font-bold text-white font-mono">0x40_POST_FEED</h2>
+                <span class="text-term-green text-xs font-mono animate-blink ml-4">► AUTO_SCROLL_ENABLED</span>
+            </div>
+            <div id="post-feed" class="flex gap-8 overflow-x-auto scrollbar-hide py-4"></div>
+            <div class="text-center mt-8 space-x-4">
+                <button id="scroll-left" class="glass-card px-6 py-3 text-term-green font-mono text-sm hover:bg-term-green hover:text-black transition-all">◄ PREV</button>
+                <button id="scroll-right" class="glass-card px-6 py-3 text-term-green font-mono text-sm hover:bg-term-green hover:text-black transition-all">NEXT ►</button>
+                <button id="toggle-autoscroll" class="glass-card px-6 py-3 text-term-cyan font-mono text-sm hover:bg-term-cyan hover:text-black transition-all">PAUSE AUTO_SCROLL</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            typeLoop();
+            animateBH();
+            animateAtom();
+            animateNN();
+            animateOsc();
+            displaySkillsLoop();
+            generatePostFeed();
+            generateProjectCarousel();
+
+            const observer = new IntersectionObserver(e => e.forEach(en => en.isIntersecting && en.target.classList.add('timeline-in-view')), { threshold: 0.3 });
+            const tl = document.querySelector('.timeline-container');
+            if (tl) observer.observe(tl);
+        });
+
+         // BLACKHOLE
+        const bhCanvas = document.getElementById('blackhole-canvas');
+        const bhCtx = bhCanvas.getContext('2d');
+        let bw, bh;
+        function resizeBH() { bw = window.innerWidth; bh = window.innerHeight; bhCanvas.width = bw; bhCanvas.height = bh; }
+        resizeBH(); window.addEventListener('resize', resizeBH);
+        const particles = [];
+        class Particle { constructor() { this.reset(); } reset() { this.a = Math.random()*Math.PI*2; this.r = Math.random()*800+150; this.s = (Math.random()*0.008+0.002)*(1000/this.r); this.sz = Math.random()*2+0.5; this.c = Math.random()>0.5?'#00f0ff':'#00ff41'; } update() { this.a += this.s; this.r -= 0.1 + (200/this.r); this.s += 0.00005; if(this.r<50||this.r>1000) this.reset(); } draw() { const x = bw/2 + Math.cos(this.a)*this.r; const y = bh/2 + Math.sin(this.a)*this.r*0.4; bhCtx.fillStyle = this.c; bhCtx.fillRect(x, y, this.sz, this.sz); } }
+        for(let i=0; i<800; i++) particles.push(new Particle());
+        function animateBH() {
+            bhCtx.fillStyle='rgba(0,0,0,0.1)'; bhCtx.fillRect(0,0,bw,bh);
+            bhCtx.beginPath(); bhCtx.arc(bw/2,bh/2,30+Math.sin(Date.now()*0.002)*5,0,Math.PI*2); bhCtx.fillStyle='#000'; bhCtx.fill();
+            bhCtx.shadowBlur=45; bhCtx.shadowColor='#00f0ff'; bhCtx.strokeStyle='rgba(0,240,255,0.4)'; bhCtx.lineWidth=1.5; bhCtx.stroke(); bhCtx.shadowBlur=0;
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateBH);
+        }
+        animateBH();
+
+        // TYPEWRITER
+        const roles = ["FULL STACK ENGINEER","MECHATRONICS","AI RESEARCHER"];
+        let ri=0, ci=0, del=false;
+        const te = document.getElementById('typewriter');
+        function typeLoop() {
+            te.textContent = del ? roles[ri].substring(0,ci-1) : roles[ri].substring(0,ci+1);
+            ci += del ? -1 : 1;
+            if (!del && ci===roles[ri].length) { del=true; setTimeout(typeLoop,2000); }
+            else if (del && ci===0) { del=false; ri=(ri+1)%roles.length; setTimeout(typeLoop,500); }
+            else setTimeout(typeLoop, del?50:100);
+        }
+        typeLoop();
+
+        // TERMINAL SKILLS
+        const skills = ["CORE: Python, Go, C/C++","FRONTEND: React, Next.js, TypeScript","BACKEND: Node.js, FastAPI, GraphQL","ROBOTICS: ROS2, Kinematics","EMBEDDED: STM32, RTOS, PCB","AI/ML: Deployment, LLMs"];
+        let si = 0;
+        function displaySkillsLoop() {
+            document.getElementById('terminal-output').innerHTML += `<p><span class="text-white">[${si.toString().padStart(2,'0')}] </span><span class="text-term-green">${skills[si]}</span></p>`;
+            document.getElementById('terminal-output').scrollTop = 1e9;
+            si = (si+1)%skills.length;
+            setTimeout(displaySkillsLoop,800);
+        }
+        displaySkillsLoop();
+
+        // ATOM NAV
+        const atomCanvas = document.getElementById('atom-canvas');
+        const atomCtx = atomCanvas.getContext('2d');
+        let aw, ah;
+        function resizeAtom() { aw = atomCanvas.offsetWidth; ah = atomCanvas.offsetHeight; atomCanvas.width = aw; atomCanvas.height = ah; }
+        resizeAtom(); window.addEventListener('resize', resizeAtom);
+        const electrons = [{ orbit:40, speed:0.02, angle:0, color:'#00ff41' }, { orbit:60, speed:0.015, angle:Math.PI/2, color:'#00f0ff' }, { orbit:80, speed:0.01, angle:Math.PI, color:'#bd93f9' }];
+        function animateAtom() {
+            atomCtx.clearRect(0,0,aw,ah);
+            const cx = aw/2, cy = ah/2;
+            atomCtx.beginPath(); atomCtx.arc(cx,cy,5,0,Math.PI*2); atomCtx.fillStyle='#ffb86c'; atomCtx.shadowBlur=10; atomCtx.shadowColor='#ffb86c'; atomCtx.fill(); atomCtx.shadowBlur=0;
+            electrons.forEach(e => {
+                e.angle += e.speed;
+                const x = cx + Math.cos(e.angle)*e.orbit*1.5;
+                const y = cy + Math.sin(e.angle)*e.orbit*0.5;
+                atomCtx.beginPath(); atomCtx.arc(x,y,2.5,0,Math.PI*2); atomCtx.fillStyle=e.color; atomCtx.shadowBlur=8; atomCtx.shadowColor=e.color; atomCtx.fill(); atomCtx.shadowBlur=0;
+            });
+            requestAnimationFrame(animateAtom);
+        }
+        animateAtom();
+
+        // NEURAL NET
+        const nnCanvas = document.getElementById('neural-net');
+        const nnCtx = nnCanvas.getContext('2d');
+        function resizeNN() { nnCanvas.width = nnCanvas.offsetWidth; nnCanvas.height = nnCanvas.offsetHeight; }
+        resizeNN(); window.addEventListener('resize', resizeNN);
+        const nodes = Array.from({length:40}, () => ({ x:Math.random()*1000, y:Math.random()*500, vx:(Math.random()-0.5)*0.5, vy:(Math.random()-0.5)*0.5 }));
+        function animateNN() {
+            nnCtx.clearRect(0,0,nnCanvas.width,nnCanvas.height);
+            nodes.forEach(n => {
+                n.x += n.vx; n.y += n.vy;
+                if(n.x<0||n.x>nnCanvas.width) n.vx*=-1; if(n.y<0||n.y>nnCanvas.height) n.vy*=-1;
+                nnCtx.beginPath(); nnCtx.arc(n.x,n.y,2,0,Math.PI*2); nnCtx.fillStyle='#00ff41'; nnCtx.fill();
+                nodes.forEach(n2 => {
+                    const d = Math.hypot(n.x-n2.x,n.y-n2.y);
+                    if(d<100) { nnCtx.beginPath(); nnCtx.moveTo(n.x,n.y); nnCtx.lineTo(n2.x,n2.y); nnCtx.strokeStyle=`rgba(0,255,65,${1-d/100})`; nnCtx.stroke(); }
+                });
+            });
+            requestAnimationFrame(animateNN);
+        }
+        animateNN();
+
+        // OSCILLOSCOPE
+        const oscCanvas = document.getElementById('oscilloscope');
+        const oscCtx = oscCanvas.getContext('2d');
+        function resizeOsc() { oscCanvas.width = window.innerWidth; oscCanvas.height = 60; }
+        resizeOsc(); window.addEventListener('resize', resizeOsc);
+        let waveT = 0;
+        function animateOsc() {
+            oscCtx.fillStyle='rgba(0,0,0,0.1)'; oscCtx.fillRect(0,0,oscCanvas.width,oscCanvas.height);
+            oscCtx.beginPath();
+            for(let x=0; x<oscCanvas.width; x++) {
+                const y = 30 + Math.sin(x*0.02 + waveT)*10 + Math.sin(x*0.05 + waveT*2)*5;
+                x===0 ? oscCtx.moveTo(x,y) : oscCtx.lineTo(x,y);
+            }
+            oscCtx.strokeStyle='#00ff41'; oscCtx.lineWidth=1; oscCtx.stroke();
+            waveT += 0.1;
+            requestAnimationFrame(animateOsc);
+        }
+        animateOsc();
+
+        // POST FEED
+                function generatePostFeed() {
+            const feed = document.getElementById('post-feed');
+            feed.innerHTML = '';
+
+            const posts = [
+                { platform: "YouTube", icon: "fa-youtube", color: "text-red-500", title: "6-DOF Arm: Full Inverse Kinematics Breakdown", summary: "Live coding + real-time demo on STM32", time: "2h ago", views: "12.4K" },
+                { platform: "LinkedIn", icon: "fa-linkedin", color: "text-blue-400", title: "Just shipped a custom NPU on FPGA", summary: "98% power reduction vs GPU", time: "5h ago", views: "8.9K" },
+                { platform: "GitHub", icon: "fa-github", color: "text-white", title: "Released Quantum Circuit Simulator v2", summary: "Now with noise models & real backend support", time: "1d ago", views: "42K" },
+                { platform: "Twitter", icon: "fa-x-twitter", color: "text-white", title: "Drone swarm achieved perfect formation flight", summary: "ROS2 + ArduPilot + custom CV", time: "3d ago", views: "156K" },
+                { platform: "Medium", icon: "fa-medium", color: "text-green-400", title: "Why I built my own RTOS from scratch", summary: "Tickless kernel + preemptive scheduling deep dive", time: "1w ago", views: "29K" },
+                { platform: "YouTube", icon: "fa-youtube", color: "text-red-500", title: "Automated Chemistry Lab – Full Tour", summary: "pH control, peristaltic pumps, live reactions", time: "2w ago", views: "89K" },
+                { platform: "LinkedIn", icon: "fa-linkedin", color: "text-blue-400", title: "Tea Leaf Quality AI Model – 99.2% accuracy", summary: "CNN trained on 50K+ images", time: "3w ago", views: "67K" },
+                { platform: "GitHub", icon: "fa-github", color: "text-white", title: "Open-source CubeSat ground station software", summary: "Auto-tracking + SDR telemetry decoder", time: "1mo ago", views: "124K" },
+                { platform: "Twitter", icon: "fa-x-twitter", color: "text-white", title: "First quantum entanglement demo", summary: "Using homemade simulator + IBM Q", time: "2mo ago", views: "892K" },
+                { platform: "Medium", icon: "fa-medium", color: "text-green-400", title: "Building a 500W servo controller from scratch", summary: "FOC algorithm + custom PCB design", time: "3mo ago", views: "45K" },
+                { platform: "YouTube", icon: "fa-youtube", color: "text-red-500", title: "Robotic Weeding System – Field Test", summary: "AI vision + mechanical precision", time: "4mo ago", views: "210K" },
+                { platform: "LinkedIn", icon: "fa-linkedin", color: "text-blue-400", title: "Joined HalpeWatte Tea Factory as Trainee IoT Dev", summary: "Excited to bring automation to tradition", time: "6mo ago", views: "156K" },
+            ];
+
+            // Duplicate posts for seamless infinite scroll
+            const allPosts = [...posts, ...posts];
+
+            allPosts.forEach(post => {
+                const card = document.createElement('div');
+                card.className = 'min-w-[380px] max-w-[420px] flex-shrink-0';
+
+                card.innerHTML = `
+                    <div class="glass-card p-6 rounded-xl border-l-4 border-gray-600 hover:border-term-green hover:shadow-[0_0_30px_rgba(0,255,65,0.2)] transition-all h-full">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-brands ${post.icon} ${post.color} text-2xl"></i>
+                                <span class="text-xs font-mono text-gray-500">${post.platform}</span>
+                            </div>
+                            <span class="text-term-green text-xs font-mono animate-pulse">${post.time}</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-3 leading-tight line-clamp-2">${post.title}</h3>
+                        <p class="text-gray-400 text-sm mb-4 font-sans line-clamp-3">${post.summary}</p>
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-800">
+                            <span class="text-term-cyan text-xs font-mono">${post.views} views</span>
+                            <span class="text-term-green font-mono text-xs flex items-center gap-2 hover:translate-x-1 transition-transform">
+                                READ_FULL_LOG →
+                            </span>
+                        </div>
+                    </div>
+                `;
+                feed.appendChild(card);
+            });
+
+            // Auto-scroll setup
+            const feedContainer = document.getElementById('post-feed');
+            feedContainer.classList.add('auto-scrolling');
+
+            let autoScrollEnabled = true;
+            let scrollInterval;
+
+            const startAutoScroll = () => {
+                if (!autoScrollEnabled) return;
+                scrollInterval = setInterval(() => {
+                    if (feedContainer.scrollLeft >= feedContainer.scrollWidth / 2 - feedContainer.clientWidth) {
+                        feedContainer.scrollLeft = 0;
+                    } else {
+                        feedContainer.scrollLeft += 1;
+                    }
+                }, 30);
+            };
+
+            const stopAutoScroll = () => clearInterval(scrollInterval);
+
+            feedContainer.addEventListener('mouseenter', stopAutoScroll);
+            feedContainer.addEventListener('mouseleave', startAutoScroll);
+
+            // Manual controls
+            document.getElementById('scroll-left').addEventListener('click', () => {
+                feedContainer.scrollBy({ left: -400, behavior: 'smooth' });
+            });
+            document.getElementById('scroll-right').addEventListener('click', () => {
+                feedContainer.scrollBy({ left: 400, behavior: 'smooth' });
+            });
+            document.getElementById('toggle-autoscroll').addEventListener('click', function() {
+                autoScrollEnabled = !autoScrollEnabled;
+                this.textContent = autoScrollEnabled ? 'PAUSE AUTO_SCROLL' : 'RESUME AUTO_SCROLL';
+                this.classList.toggle('bg-term-green', !autoScrollEnabled);
+                this.classList.toggle('text-black', !autoScrollEnabled);
+                if (autoScrollEnabled) startAutoScroll();
+                else stopAutoScroll();
+            });
+
+            startAutoScroll();
+
+                    function generateProjectCarousel() {
+            const carousel = document.getElementById('project-carousel');
+            carousel.innerHTML = '';
+
+            const projects = [
+                { title: "6-DOF Robotic Manipulator", desc: "Inverse kinematics on STM32 + OpenCV tracking", tags: ["C++", "Embedded", "Vision"], color: "border-term-cyan", icon: "fa-robot" },
+                { title: "Automated Chemistry Lab", desc: "IoT fluid mixing with pH sensors & peristaltic pumps", tags: ["Python", "IoT", "Control"], color: "border-term-purple", icon: "fa-flask-vial" },
+                { title: "Drone Swarm Intelligence", desc: "Multi-agent formation flight with ROS2 + computer vision", tags: ["ROS2", "Python", "AI"], color: "border-term-orange", icon: "fa-drone" },
+                { title: "Custom Neural Processing Unit", desc: "FPGA-based NPU for edge AI inference", tags: ["Verilog", "FPGA", "AI"], color: "border-term-green", icon: "fa-brain" },
+                { title: "CubeSat Ground Station", desc: "Automated antenna rotator + SDR telemetry decoder", tags: ["GNURadio", "C++", "RF"], color: "border-term-cyan", icon: "fa-satellite-dish" },
+                { title: "Quantum Circuit Simulator", desc: "Full-stack quantum computing platform with noise modeling", tags: ["Qiskit", "React", "Quantum"], color: "border-term-purple", icon: "fa-atom" },
+            ];
+
+            // Duplicate for seamless loop
+            const allProjects = [...projects, ...projects];
+
+            allProjects.forEach(proj => {
+                const card = document.createElement('div');
+                card.className = 'min-w-[300px] max-w-[320px] flex-shrink-0';
+                card.innerHTML = `
+                    <div class="glass-card p-8 rounded-xl ${proj.color} border-l-4 hover:border-white hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] transition-all h-full group">
+                        <div class="w-32 h-32 mx-auto mb-6 bg-black rounded-full border-2 border-gray-800 flex items-center justify-center overflow-hidden shadow-[inset_0_0_30px_rgba(0,0,0,1)]">
+                            <i class="fa-solid ${proj.icon} text-6xl text-gray-600 group-hover:text-white transition-all group-hover:scale-110"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4 text-center group-hover:glow-text transition-all">${proj.title}</h3>
+                        <p class="text-gray-400 text-sm text-center mb-6 font-mono">${proj.desc}</p>
+                        <div class="flex flex-wrap gap-2 justify-center">
+                            ${proj.tags.map(tag => `<span class="px-3 py-1 text-xs font-mono border ${proj.color.replace('border-', 'border-').replace('term-', '')}/50 ${proj.color.replace('border-', 'text-')} rounded">${tag}</span>`).join('')}
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-gray-800 text-center">
+                            <span class="text-term-green text-xs font-mono group-hover:translate-x-2 transition-transform inline-flex items-center gap-2">
+                                VIEW_SOURCE_CODE →
+                            </span>
+                        </div>
+                    </div>
+                `;
+                carousel.appendChild(card);
+            });
+
+            // Auto-scroll logic
+            carousel.classList.add('proj-auto-scrolling');
+            let projAutoEnabled = true;
+            let projInterval;
+
+            const startProjScroll = () => {
+                if (!projAutoEnabled) return;
+                projInterval = setInterval(() => {
+                    if (carousel.scrollLeft >= carousel.scrollWidth / 2 - carousel.clientWidth) {
+                        carousel.scrollLeft = 0;
+                    } else {
+                        carousel.scrollLeft += 1.5;
+                    }
+                }, 30);
+            };
+
+            const stopProjScroll = () => clearInterval(projInterval);
+
+            carousel.addEventListener('mouseenter', stopProjScroll);
+            carousel.addEventListener('mouseleave', startProjScroll);
+
+            document.getElementById('proj-left').onclick = () => carousel.scrollBy({ left: -420, behavior: 'smooth' });
+            document.getElementById('proj-right').onclick = () => carousel.scrollBy({ left: 420, behavior: 'smooth' });
+            document.getElementById('toggle-proj-scroll').onclick = function() {
+                projAutoEnabled = !projAutoEnabled;
+                this.textContent = projAutoEnabled ? 'PAUSE AUTO_SCROLL' : 'RESUME AUTO_SCROLL';
+                this.classList.toggle('bg-term-green', !projAutoEnabled);
+                this.classList.toggle('text-black', !projAutoEnabled);
+                projAutoEnabled ? startProjScroll() : stopProjScroll();
+            };
+
+            startProjScroll();
+        }
+
+        // Call it on load
+        generateProjectCarousel();
+        }
+
+
+                // TERMINAL BOOT SEQUENCE WITH TYPING EFFECT
+        const bootText = `  _____            _    _              _   _  _____ _   _ 
+ / ____|          | |  | |            | | | |/ ____| | | |
+| (___   __ _  ___| |__| | __ _ _ __  | | | | |    | | | |
+ \\___ \\ / _\` |/ __|  __  |/ _\` | '__| | | | | |    | | | |
+ ____) | (_| | (__| |  | | (_| | |    | | | | |___ | | | |
+|_____/ \\__,_|\\___|_|  |_|\\__,_|_|    |_| |_|\\_____|_| |_|
+                                                           
+>>> SYSTEM_ROOT_V6 ONLINE
+>>> NEURAL INTERFACE ACTIVE
+>>> GRAVITATIONAL CORE STABLE
+>>> ARTIFACTS LOADED: 6
+>>> BIO_SCAN COMPLETE
+
+Welcome, Operator.
+>_
+`;
+
+        function typeBootSequence() {
+            const bootElement = document.getElementById('boot-sequence');
+            bootElement.innerHTML = '';
+            bootElement.classList.remove('opacity-0');
             
-            </div>
-        </section>
+            let i = 0;
+            const timer = setInterval(() => {
+                if (i < bootText.length) {
+                    bootElement.innerHTML += bootText.charAt(i)
+                        .replace(/ /g, '&nbsp;')
+                        .replace(/\n/g, '<br>');
+                    bootElement.scrollTop = bootElement.scrollHeight;
+                    i++;
+                } else {
+                    clearInterval(timer);
+                }
+            }, 30);
+        }
 
-        <section id="projects">
-            <div class="container">
-                <h2>My Projects</h2>
-                <div class="project-list">
-                    <div class="project">
-                        <h3>Project 1</h3>
-                        <p>Description of project 1.</p>
-                        <a href="link-to-project-1" target="_blank">View Project</a>
-                    </div>
-                    <div class="project">
-                        <h3>Project 2</h3>
-                        <p>Description of project 2.</p>
-                        <a href="link-to-project-2" target="_blank">View Project</a>
-                    </div>
-                    <div class="project">
-                        <h3>Project 3</h3>
-                        <p>Description of project 3.</p>
-                        <a href="link-to-project-3" target="_blank">View Project</a>
-                    </div>
-                    <div class="project">
-                        <h3>Project 4</h3>
-                        <p>Description of project 4.</p>
-                        <a href="link-to-project-3" target="_blank">View Project</a>
-                    </div>
-                </div>
-            </div>
-        </section>
+        // Start boot sequence when page loads
+        setTimeout(typeBootSequence, 1000);
 
-        <section id="skills">
-            <div class="container">
-                <h2>Skills</h2>
-                <br>
-                <ul>
-                    <li>UI/UX</li>
-                    <li>HTML & CSS</li>
-                    <li>JavaScript</li>
-                    <li>PHP</li>
-                    <li>Java</li>
-                    <li>Python</li>
-                    <li>ESP32</li>
-                    <li>Arduino</li>
-                    <li>Raspberry Pi</li>
-                    <li>IOT</li>
-                    <li>PCB Design(Kicad)</li>
-                    <li>3D Design(Freecad/Solidwork)</li>
-                    <li>Linux</li>
-                    <li>Office Work(WPS/Libre Office/MS Office)</li>
-                    <li>CNC</li>
-                    <li>Lathe Machine</li>
-                    <li>Welding</li>
-                </ul> <br>
-         <h2>Education</h2>
-         
-<div class="education-timeline">
-    <div class="timeline-item">
-        <div class="timeline-year">2023</div>
-        <div class="timeline-content">
-            <h3>Bachelor's Degree in Information Technology</h3>
-            <p><strong>University of Moratuwa</strong></p>
-            <p>Specialized in software development and AI.</p>
-        </div>
-    </div>
-    <div class="timeline-item">
-        <div class="timeline-year">2022</div>
-        <div class="timeline-content">
-            <h3>High Natinal Diploma in Production Technology</h3>
-            <p><strong>University College Of Jaffna</strong></p>
-            <p>Focused on machanical and Manufacturing.</p>
-        </div>
-    </div>
-</div>
-            </div>
-        </div>
-            </div>
-        </section>
-
-        <section id="contact">
-            <div class="container">
-                <h2>Contact Me</h2>
-                <p>If you'd like to work together or just want to say hi, feel free to reach out!</p>
-                <form action="your-server-side-script.php" method="POST">
-                    <label for="name">Your Name</label>
-                    <input type="text" id="name" name="name" required>
-
-                    <label for="email">Your Email</label>
-                    <input type="email" id="email" name="email" required>
-
-                    <label for="message">Your Message</label>
-                    <textarea id="message" name="message" required></textarea>
-
-                    <button type="submit">Send Message</button>
-                </form>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2024 Sahan. All rights reserved.</p>
-    </footer>
-    <script src="script.js"></script>
-
+    </script>
 </body>
 </html>
